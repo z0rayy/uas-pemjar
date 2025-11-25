@@ -1,3 +1,11 @@
+setup backend
+
+di path root
+
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
