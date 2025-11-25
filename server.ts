@@ -65,7 +65,7 @@ const fetchGlobalEarthquakes = async (): Promise<GlobalEarthquake[]> => {
       .filter((feature: any) => feature.properties.mag >= 2.5) // Filter magnitude >= 2.5
       .map((feature: any) => ({
         id: feature.id,
-        time: new Date(feature.properties.time).toLocaleString("id-ID"),
+        time: feature.properties.time,
         latitude: feature.geometry.coordinates[1],
         longitude: feature.geometry.coordinates[0],
         depth: feature.geometry.coordinates[2],
