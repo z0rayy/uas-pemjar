@@ -1,11 +1,10 @@
-import express, { Express } from "express";
+import express from "express";
 import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
 import axios from "axios";
-import { javaCities, calculateDistance } from "./src/data/javaCities";
 
-const app: Express = express();
+const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
@@ -20,10 +19,10 @@ app.use(express.json());
 
 // Simple API endpoint
 app.get("/", (req, res) => {
-  res.send("Earthquake Server is running!");
+  res.send("Global Earthquake Server is running!");
 });
 
-interface Earthquake {
+interface GlobalEarthquake {
   id: string;
   time: string;
   latitude: number;
@@ -31,45 +30,39 @@ interface Earthquake {
   depth: number;
   magnitude: number;
   place: string;
+  country: string;
+  tsunamiWarning: boolean;
 }
 
-interface CityEarthquakeStatus {
-  cityName: string;
-  province: string;
-  distance: number;
-  magnitude: number;
-  depth: number;
-  time: string;
-  affectedByEarthquake: boolean;
-  intensity: "low" | "medium" | "high" | "very_high";
-}
-
-// Fungsi untuk menghitung intensitas berdasarkan magnitude dan jarak
-const calculateIntensity = (magnitude: number, distance: number): "low" | "medium" | "high" | "very_high" => {
-  const intensityScore = magnitude - Math.log10(distance) / 2;
-
-  if (intensityScore < 2) return "low";
-  if (intensityScore < 4) return "medium";
-  if (intensityScore < 6) return "high";
-  return "very_high";
+// Fungsi untuk extract negara dari place string
+const extractCountry = (place: string): string => {
+  // Format USGS biasanya: "Distance km direction of City, Country"
+  const parts = place.split(",");
+  if (parts.length > 0) {
+    return parts[parts.length - 1].trim();
+  }
+  return "Unknown";
 };
 
-// Fetch data dari USGS API
-const fetchEarthquakeData = async (): Promise<Earthquake[]> => {
+// Fungsi untuk menghitung magnitude scale
+const getMagnitudeLevel = (magnitude: number): "low" | "moderate" | "strong" | "major" | "great" => {
+  if (magnitude < 4) return "low";
+  if (magnitude < 5) return "moderate";
+  if (magnitude < 6) return "strong";
+  if (magnitude < 7) return "major";
+  return "great";
+};
+
+// Fetch global earthquake data dari USGS (7 hari terakhir)
+const fetchGlobalEarthquakes = async (): Promise<GlobalEarthquake[]> => {
   try {
-    // Mengambil gempa dalam 24 jam terakhir di area Indonesia
+    // Fetch gempa 7 hari terakhir dengan magnitude >= 2.5
     const response = await axios.get(
-      "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+      "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
     );
 
-    const earthquakes: Earthquake[] = response.data.features
-      .filter(
-        (feature: any) =>
-          feature.geometry.coordinates[1] >= -8.8 && // Latitude Jawa
-          feature.geometry.coordinates[1] <= -5.0 &&
-          feature.geometry.coordinates[0] >= 105.0 && // Longitude Jawa
-          feature.geometry.coordinates[0] <= 115.0
-      )
+    const earthquakes: GlobalEarthquake[] = response.data.features
+      .filter((feature: any) => feature.properties.mag >= 2.5) // Filter magnitude >= 2.5
       .map((feature: any) => ({
         id: feature.id,
         time: new Date(feature.properties.time).toLocaleString("id-ID"),
@@ -78,7 +71,13 @@ const fetchEarthquakeData = async (): Promise<Earthquake[]> => {
         depth: feature.geometry.coordinates[2],
         magnitude: feature.properties.mag,
         place: feature.properties.place,
-      }));
+        country: extractCountry(feature.properties.place),
+        tsunamiWarning: feature.properties.tsunami === 1,
+      }))
+      .sort((a: GlobalEarthquake, b: GlobalEarthquake) => {
+        // Sort by time descending (terbaru dulu)
+        return new Date(b.time).getTime() - new Date(a.time).getTime();
+      });
 
     return earthquakes;
   } catch (error) {
@@ -87,75 +86,45 @@ const fetchEarthquakeData = async (): Promise<Earthquake[]> => {
   }
 };
 
-// Fungsi untuk menentukan kota yang terkena gempa
-const getAffectedCities = (earthquakes: Earthquake[]): CityEarthquakeStatus[] => {
-  const cityStatuses: CityEarthquakeStatus[] = [];
-
-  // Jika ada gempa, hitung jarak dan intensitas untuk setiap kota
-  if (earthquakes.length > 0) {
-    const latestEarthquake = earthquakes[0]; // Ambil gempa terbaru
-
-    javaCities.forEach((city) => {
-      const distance = calculateDistance(
-        city.latitude,
-        city.longitude,
-        latestEarthquake.latitude,
-        latestEarthquake.longitude
-      );
-
-      // Gempa terasa jika magnitude >= 3.0 dan jarak <= 300 km
-      const affectedByEarthquake = latestEarthquake.magnitude >= 3.0 && distance <= 300;
-
-      if (affectedByEarthquake) {
-        const intensity = calculateIntensity(latestEarthquake.magnitude, distance);
-
-        cityStatuses.push({
-          cityName: city.name,
-          province: city.province,
-          distance: Math.round(distance),
-          magnitude: latestEarthquake.magnitude,
-          depth: latestEarthquake.depth,
-          time: latestEarthquake.time,
-          affectedByEarthquake: true,
-          intensity,
-        });
-      }
-    });
-  }
-
-  return cityStatuses;
-};
-
 // WebSocket event handling
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
   // Emit data awal ketika client connect
-  socket.emit("connected", { message: "Connected to Earthquake Server" });
+  socket.emit("connected", { message: "Connected to Global Earthquake Server" });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });
 });
 
-// Update earthquake data setiap 10 detik
+// Update earthquake data setiap 30 detik
+let lastEarthquakes: GlobalEarthquake[] = [];
+
 setInterval(async () => {
   try {
-    const earthquakes = await fetchEarthquakeData();
-    const affectedCities = getAffectedCities(earthquakes);
+    const earthquakes = await fetchGlobalEarthquakes();
 
-    // Broadcast ke semua client
+    // Check apakah ada earthquake baru
+    const newEarthquakes = earthquakes.filter(
+      (eq) => !lastEarthquakes.find((lastEq) => lastEq.id === eq.id)
+    );
+
+    // Broadcast ke semua clients
     io.emit("earthquakeUpdate", {
-      earthquakes,
-      affectedCities,
+      earthquakes: earthquakes.slice(0, 100), // Limit 100 earthquake terakhir
+      newEarthquakes: newEarthquakes,
+      totalEarthquakes: earthquakes.length,
       timestamp: new Date().toISOString(),
     });
+
+    lastEarthquakes = earthquakes;
   } catch (error) {
     console.error("Error in update loop:", error);
   }
-}, 10000); // Update setiap 10 detik
+}, 30000); // Update setiap 30 detik
 
 const PORT = 3001;
 httpServer.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Global Earthquake Server running on http://localhost:${PORT}`);
 });

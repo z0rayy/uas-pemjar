@@ -22,6 +22,16 @@ interface CityEarthquakeStatus {
   intensity: "low" | "medium" | "high" | "very_high";
 }
 
+interface CityHistory {
+  [cityName: string]: {
+    lastEarthquakeTime: string | null;
+    lastMagnitude: number | null;
+    totalEarthquakes: number;
+    isCurrentlyAffected: boolean;
+    lastEarthquakeData: CityEarthquakeStatus | null;
+  };
+}
+
 interface EarthquakeData {
   earthquakes: Earthquake[];
   affectedCities: CityEarthquakeStatus[];
@@ -32,6 +42,7 @@ export const useEarthquakeSocket = () => {
   const [data, setData] = useState<EarthquakeData | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cityHistory, setCityHistory] = useState<CityHistory>({});
 
   useEffect(() => {
     const socket: Socket = io("http://localhost:3001", {
@@ -54,6 +65,39 @@ export const useEarthquakeSocket = () => {
     socket.on("earthquakeUpdate", (update: EarthquakeData) => {
       console.log("Earthquake update received:", update);
       setData(update);
+
+      // Update city history dengan data gempa terbaru
+      setCityHistory((prevHistory) => {
+        const newHistory = { ...prevHistory };
+
+        // Update affected cities
+        update.affectedCities.forEach((city) => {
+          if (!newHistory[city.cityName]) {
+            newHistory[city.cityName] = {
+              lastEarthquakeTime: null,
+              lastMagnitude: null,
+              totalEarthquakes: 0,
+              isCurrentlyAffected: false,
+              lastEarthquakeData: null,
+            };
+          }
+
+          // Check apakah ini earthquake baru (berbeda dari yang terakhir)
+          const prevData = newHistory[city.cityName].lastEarthquakeData;
+          const isNewEarthquake = !prevData || prevData.time !== city.time;
+
+          if (isNewEarthquake) {
+            newHistory[city.cityName].totalEarthquakes += 1;
+          }
+
+          newHistory[city.cityName].lastEarthquakeTime = city.time;
+          newHistory[city.cityName].lastMagnitude = city.magnitude;
+          newHistory[city.cityName].isCurrentlyAffected = true;
+          newHistory[city.cityName].lastEarthquakeData = city;
+        });
+
+        return newHistory;
+      });
     });
 
     socket.on("disconnect", () => {
@@ -71,5 +115,5 @@ export const useEarthquakeSocket = () => {
     };
   }, []);
 
-  return { data, isConnected, error };
+  return { data, isConnected, error, cityHistory };
 };

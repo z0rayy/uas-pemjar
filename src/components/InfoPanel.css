@@ -1,0 +1,310 @@
+.info-panel {
+  margin: -40px 20px 30px 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.connection-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 30px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  color: #333;
+}
+
+.status-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: blink-status 1.5s infinite;
+}
+
+.status-light.online {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+}
+
+.status-light.offline {
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+}
+
+@keyframes blink-status {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.status-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.info-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00d4ff, #0099ff);
+}
+
+.info-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1a1a2e;
+  font-weight: 700;
+}
+
+.earthquake-icon {
+  font-size: 1.8rem;
+}
+
+.card-content {
+  color: #333;
+}
+
+.card-content.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+}
+
+/* Earthquake Card Specific */
+.earthquake-card::before {
+  background: linear-gradient(90deg, #ff6b6b, #ff4757);
+}
+
+.magnitude-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.magnitude-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ff4757;
+  line-height: 1;
+}
+
+.magnitude-label {
+  font-size: 0.9rem;
+  color: #999;
+  font-weight: 600;
+}
+
+.location {
+  margin: 0 0 15px 0;
+  font-size: 0.95rem;
+  color: #666;
+  font-style: italic;
+}
+
+.earthquake-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* Affected Card Specific */
+.affected-card::before {
+  background: linear-gradient(90deg, #ffa502, #ff7a00);
+}
+
+.big-number {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #ff7a00;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffa502, #ff7a00);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(255, 165, 2, 0.5);
+}
+
+/* Total Card Specific */
+.total-card::before {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.total-card .big-number {
+  color: #667eea;
+}
+
+.total-card .progress-fill {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+/* Status Card Specific */
+.status-card::before {
+  background: linear-gradient(90deg, #f093fb, #f5576c);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-badge.low {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.status-badge.medium {
+  background: linear-gradient(135deg, #ffa502, #ff7a00);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 165, 2, 0.3);
+}
+
+.status-badge.high {
+  background: linear-gradient(135deg, #ff4757, #ff6b6b);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #999;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .info-panel {
+    margin: -30px 15px 25px 15px;
+  }
+
+  .info-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+  }
+
+  .info-card {
+    padding: 20px;
+  }
+
+  .magnitude-value {
+    font-size: 2rem;
+  }
+
+  .big-number {
+    font-size: 2.5rem;
+  }
+
+  .card-header h3 {
+    font-size: 1rem;
+  }
+
+  .earthquake-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .magnitude-value {
+    font-size: 1.8rem;
+  }
+
+  .big-number {
+    font-size: 2rem;
+  }
+
+  .status-badge {
+    font-size: 0.85rem;
+    padding: 10px 18px;
+  }
+}

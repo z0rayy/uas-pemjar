@@ -1,0 +1,204 @@
+.notification-center {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.notification-card {
+  background: white;
+  border-radius: 12px;
+  border-left: 5px solid #FF6B6B;
+  padding: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(400px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(450px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.magnitude-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.mag-value {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.mag-label {
+  font-size: 0.7rem;
+  margin-top: 2px;
+  letter-spacing: 1px;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #333;
+  transform: scale(1.2);
+}
+
+.notification-content {
+  color: #333;
+}
+
+.location {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.country {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail .label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.detail .value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.tsunami-warning {
+  background: linear-gradient(135deg, #FF6B6B, #FF4500);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 10px 0;
+  text-align: center;
+  animation: pulse-warning 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.time {
+  margin: 10px 0 0 0;
+  font-size: 0.8rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-center {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+
+  .notification-card {
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-center {
+    top: 5px;
+    right: 5px;
+    left: 5px;
+    gap: 8px;
+  }
+
+  .notification-card {
+    padding: 12px;
+  }
+
+  .location {
+    font-size: 1rem;
+  }
+
+  .mag-value {
+    font-size: 1.2rem;
+  }
+}
