@@ -1,0 +1,215 @@
+.city-grid-container {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 30px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.city-grid-container h2 {
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.cities-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.city-status-card {
+  position: relative;
+  padding: 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.city-status-card.affected {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe4cc 100%);
+  border-color: #ff8c00;
+  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.2);
+}
+
+.city-status-card.safe {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+}
+
+.city-status-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.city-status-card.affected:hover {
+  box-shadow: 0 6px 16px rgba(255, 140, 0, 0.3);
+}
+
+.city-status-card.safe:hover {
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.2);
+}
+
+/* Earthquake Notification Badge */
+.earthquake-notification {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.notification-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  animation: earthquake-pulse 1.5s infinite;
+}
+
+@keyframes earthquake-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.notification-text {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Safe Badge */
+.safe-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #10b981;
+  color: white;
+  font-weight: bold;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* City Name and Info */
+.city-name {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
+  padding-right: 80px; /* Space untuk badge */
+}
+
+.province {
+  margin: 0 0 12px 0;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Earthquake Details */
+.earthquake-details {
+  font-size: 0.85rem;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.earthquake-details p {
+  margin: 6px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.earthquake-details .label {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.earthquake-details .value {
+  color: #333;
+  font-weight: 500;
+}
+
+.earthquake-details .time {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.earthquake-details .time .value {
+  color: #666;
+  display: block;
+  width: 100%;
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .cities-status-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .city-grid-container {
+    padding: 15px;
+  }
+
+  .cities-status-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .city-name {
+    font-size: 1rem;
+  }
+
+  .earthquake-notification,
+  .safe-badge {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+
+  .notification-pulse {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cities-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .city-status-card {
+    min-height: auto;
+  }
+}
