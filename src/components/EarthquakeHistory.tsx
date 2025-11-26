@@ -61,7 +61,7 @@ export const EarthquakeHistory = ({ earthquakes }: EarthquakeHistoryProps) => {
 
   return (
     <div className="earthquake-history-container">
-      <h2 className="history-title">📊 Earthquake History & Search</h2>
+      <h2 className="history-title"> Earthquake History & Search</h2>
 
       <div className="filters-section">
         {/* Date Filter */}

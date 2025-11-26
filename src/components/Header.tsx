@@ -25,7 +25,6 @@ export const Header = () => {
         </div>
 
         <h1 className="header-title">
-          <span className="live-indicator">● LIVE</span>
           <span className="main-title">GENFO</span>
         </h1>
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGlobalEarthquakeSocket } from "../hooks/useGlobalEarthquakeSocket";
 import { EarthquakeHistory } from "./EarthquakeHistory";
 import { Header } from "./Header";
@@ -6,7 +6,6 @@ import "./EarthquakeDashboard.css";
 
 export const EarthquakeDashboard = () => {
   const { data, isConnected, error } = useGlobalEarthquakeSocket();
-  const [showStats, setShowStats] = useState(true);
 
   useEffect(() => {
     document.title = `Earthquake Detection - ${data?.totalEarthquakes || 0} Events`;
@@ -44,9 +43,9 @@ export const EarthquakeDashboard = () => {
       <div className={`connection-status ${isConnected ? "connected" : "disconnected"}`}>
         <span className="status-dot"></span>
         {isConnected ? (
-          <span>🟢 Live - Connected to Earthquake Server</span>
+          <span>Live - Connected to Earthquake Server</span>
         ) : (
-          <span>🔴 Offline - Reconnecting...</span>
+          <span>Offline - Reconnecting...</span>
         )}
       </div>
 
@@ -56,7 +55,7 @@ export const EarthquakeDashboard = () => {
         </div>
       )}
 
-      {showStats && data && (
+      {data && (
         <div className="stats-container">
           <div className="stat-card latest">
             <div className="stat-label">📍 Latest Earthquake</div>
@@ -120,13 +119,6 @@ export const EarthquakeDashboard = () => {
           <p>Loading earthquake data...</p>
         </div>
       )}
-
-      <button
-        className="toggle-stats-btn"
-        onClick={() => setShowStats(!showStats)}
-      >
-        {showStats ? "📊 Hide Stats" : "📊 Show Stats"}
-      </button>
     </div>
   );
 };
