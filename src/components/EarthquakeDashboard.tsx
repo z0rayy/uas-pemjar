@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useGlobalEarthquakeSocket } from "../hooks/useGlobalEarthquakeSocket";
-import { NotificationCenter } from "./NotificationCenter";
 import { EarthquakeHistory } from "./EarthquakeHistory";
 import { Header } from "./Header";
 import "./EarthquakeDashboard.css";
@@ -110,8 +109,6 @@ export const EarthquakeDashboard = () => {
           </div>
         </div>
       )}
-
-      <NotificationCenter />
 
       {data?.earthquakes && (
         <EarthquakeHistory earthquakes={data.earthquakes} />
