@@ -27,12 +27,15 @@ export const useGlobalEarthquakeSocket = () => {
   const [newNotifications, setNewNotifications] = useState<GlobalEarthquake[]>([]);
 
   useEffect(() => {
-    const socket: Socket = io("http://localhost:3001", {
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5,
-    });
+    const socket: Socket = io(
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:3001",
+      {
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: 5,
+      }
+    );
 
     socket.on("connect", () => {
       console.log("Connected to server");
