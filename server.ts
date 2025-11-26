@@ -10,8 +10,8 @@ const io = new SocketIOServer(httpServer, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "https://NAMA-SITE-KAMU.netlify.app"
-    ],    
+      "https://wondrous-paletas-dbd394.netlify.app"
+    ],
     methods: ["GET", "POST"],
   },
 });
