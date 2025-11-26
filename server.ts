@@ -8,7 +8,10 @@ const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://NAMA-SITE-KAMU.netlify.app"
+    ],    
     methods: ["GET", "POST"],
   },
 });
@@ -124,7 +127,7 @@ setInterval(async () => {
   }
 }, 30000); // Update setiap 30 detik
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => {
-  console.log(`✅ Global Earthquake Server running on http://localhost:${PORT}`);
+  console.log(`✅ Global Earthquake Server running on ${PORT}`);
 });
