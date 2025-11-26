@@ -10,7 +10,7 @@ const io = new SocketIOServer(httpServer, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "https://wondrous-paletas-dbd394.netlify.app"
+      "https://genfo.netlify.app"
     ],
     methods: ["GET", "POST"],
   },
