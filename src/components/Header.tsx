@@ -26,7 +26,7 @@ export const Header = () => {
 
         <h1 className="header-title">
           <span className="live-indicator">● LIVE</span>
-          <span className="main-title">Earthquake Detector</span>
+          <span className="main-title">GENFO</span>
         </h1>
 
         <p className="header-subtitle">Pantau Aktivitas Gempa Bumi Real-Time di Seluruh Dunia</p>
