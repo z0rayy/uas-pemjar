@@ -1,10 +1,44 @@
-setup backend
+# Earthquake Dashboard - Deployment Ready
 
-di path root
+## Setup
 
+### Backend
+```bash
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
+```
+
+### Frontend Development
+```bash
+npm install
+npm run dev
+```
+
+## Environment Variables
+
+### Development (.env.local)
+Create `.env.local` file:
+```env
+VITE_SOCKET_URL=http://localhost:3001
+```
+
+### Production (Netlify)
+Set environment variable in Netlify dashboard:
+```
+VITE_SOCKET_URL=https://uas-pemjar-backend.onrender.com/
+```
+
+## Deployment Strategy
+
+### Frontend (Netlify)
+1. Build: `npm run build`
+2. Upload `dist/` folder to Netlify
+3. Set `VITE_SOCKET_URL` environment variable
+
+### Backend (Render)
+- Already deployed: https://uas-pemjar-backend.onrender.com/
+- Automatically fetches live earthquake data from USGS
 
 # React + TypeScript + Vite
 
