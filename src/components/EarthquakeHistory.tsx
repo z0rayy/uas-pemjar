@@ -20,7 +20,7 @@ export const EarthquakeHistory = ({ earthquakes }: EarthquakeHistoryProps) => {
   // Get date 7 days ago
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const maxDate = sevenDaysAgo.toISOString().split("T")[0];
+  // const maxDate = sevenDaysAgo.toISOString().split("T")[0];
 
   // Filter earthquakes
   const filteredEarthquakes = useMemo(() => {
@@ -74,7 +74,7 @@ export const EarthquakeHistory = ({ earthquakes }: EarthquakeHistoryProps) => {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            max={maxDate}
+            // max={maxDate}
             className="date-input"
           />
           {selectedDate && (
