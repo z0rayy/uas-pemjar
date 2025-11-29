@@ -6,13 +6,24 @@ import axios from "axios";
 
 const app = express();
 const httpServer = createServer(app);
+
+// CORS configuration - allow frontend origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://genfo.netlify.app",
+];
+
+// Add additional origins from environment
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://genfo.netlify.app"
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
