@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { GlobalEarthquake } from "../hooks/useGlobalEarthquakeSocket";
+import { EarthquakeMap } from "./EarthquakeMap";
 import "./EarthquakeHistory.css";
 
 interface EarthquakeHistoryProps {
@@ -148,6 +149,7 @@ export const EarthquakeHistory = ({ earthquakes }: EarthquakeHistoryProps) => {
                 style={{ backgroundColor: getMagnitudeColor(eq.magnitude) }}
               >
                 <span className="magnitude">{eq.magnitude.toFixed(1)}</span>
+                <span className="magnitude-label">Magnitude</span>
               </div>
 
               <div className="earthquake-info">
@@ -168,6 +170,9 @@ export const EarthquakeHistory = ({ earthquakes }: EarthquakeHistoryProps) => {
                     <span className="tsunami-alert">⚠️ TSUNAMI WARNING</span>
                   )}
                 </div>
+
+                {/* Map showing earthquake location */}
+                <EarthquakeMap earthquake={eq} />
               </div>
             </div>
           ))

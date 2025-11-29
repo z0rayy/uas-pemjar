@@ -184,21 +184,33 @@
 
 .magnitude-indicator {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 70px;
-  width: 70px;
-  height: 70px;
+  min-width: 90px;
+  width: 90px;
+  height: 90px;
   border-radius: 12px;
   flex-shrink: 0;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  gap: 3px;
 }
 
 .magnitude {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: #fff;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}
+
+.magnitude-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .earthquake-info {

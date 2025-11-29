@@ -56,7 +56,7 @@ export const NotificationCenter = () => {
         >
           <div className="notification-header">
             <div className="magnitude-badge" style={{ backgroundColor: getMagnitudeColor(notification.magnitude) }}>
-              <span className="mag-value">{notification.magnitude.toFixed(1)}</span>
+              <span className="mag-value">{notification.magnitude.toFixed(1)} M</span>
               <span className="mag-label">{getMagnitudeLabel(notification.magnitude)}</span>
             </div>
 

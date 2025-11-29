@@ -61,7 +61,7 @@ export const EarthquakeDashboard = () => {
             <div className="stat-label">📍 Latest Earthquake</div>
             {latest ? (
               <>
-                <div className="stat-value">{latest.magnitude.toFixed(1)}</div>
+                <div className="stat-value">{latest.magnitude.toFixed(1)} M</div>
                 <div className="stat-detail">{latest.country}</div>
                 <div className="stat-time">
                   {new Date(latest.time).toLocaleTimeString("id-ID")}
@@ -76,7 +76,7 @@ export const EarthquakeDashboard = () => {
             <div className="stat-label">🔴 Highest Magnitude</div>
             {highest ? (
               <>
-                <div className="stat-value">{highest.magnitude.toFixed(1)}</div>
+                <div className="stat-value">{highest.magnitude.toFixed(1)} M</div>
                 <div className="stat-detail">{highest.place}</div>
                 <div className="stat-time">
                   {new Date(highest.time).toLocaleDateString("id-ID")}
