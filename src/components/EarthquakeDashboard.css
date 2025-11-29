@@ -117,6 +117,10 @@
   max-width: 1400px;
   margin: 60px auto;
   text-align: center;
+  padding: 40px 20px;
+  background: rgba(30, 80, 150, 0.3);
+  border-radius: 15px;
+  border: 1px solid rgba(100, 200, 255, 0.3);
 }
 
 .loading-spinner {
@@ -138,9 +142,19 @@
   }
 }
 
-.loading-container p {
-  font-size: 16px;
+.loading-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #64c8ff;
+  margin: 0 0 10px 0;
+}
+
+.loading-subtitle {
+  font-size: 14px;
   color: #a8d8ff;
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0.9;
 }
 
 /* Toggle Stats Button */

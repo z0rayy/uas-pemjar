@@ -116,7 +116,11 @@ export const EarthquakeDashboard = () => {
       {!data && (
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading earthquake data...</p>
+          <p className="loading-title">Loading earthquake data...</p>
+          <p className="loading-subtitle">
+            Fetching global earthquake data from USGS.<br />
+            This may take a moment, please wait...
+          </p>
         </div>
       )}
     </div>

@@ -89,12 +89,43 @@ const fetchGlobalEarthquakes = async (): Promise<GlobalEarthquake[]> => {
   }
 };
 
+// Global state untuk earthquake data
+let lastEarthquakes: GlobalEarthquake[] = [];
+let currentEarthquakeData: any = null;
+
+// Fetch initial data immediately on server start
+const initializeData = async () => {
+  try {
+    console.log("🔄 Fetching initial earthquake data...");
+    const earthquakes = await fetchGlobalEarthquakes();
+    currentEarthquakeData = {
+      earthquakes: earthquakes.slice(0, 100),
+      newEarthquakes: earthquakes,
+      totalEarthquakes: earthquakes.length,
+      timestamp: new Date().toISOString(),
+    };
+    lastEarthquakes = earthquakes;
+    console.log(`✅ Initial data loaded: ${earthquakes.length} earthquakes`);
+  } catch (error) {
+    console.error("❌ Error loading initial data:", error);
+  }
+};
+
+// Initialize data before starting server
+initializeData();
+
 // WebSocket event handling
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
-  // Emit data awal ketika client connect
-  socket.emit("connected", { message: "Connected to Global Earthquake Server" });
+  // Send current data immediately when client connects
+  if (currentEarthquakeData) {
+    socket.emit("earthquakeUpdate", currentEarthquakeData);
+    console.log(`📤 Sent initial data to client ${socket.id}`);
+  } else {
+    // If data not loaded yet, send loading message
+    socket.emit("connected", { message: "Loading earthquake data..." });
+  }
 
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
@@ -102,8 +133,6 @@ io.on("connection", (socket) => {
 });
 
 // Update earthquake data setiap 30 detik
-let lastEarthquakes: GlobalEarthquake[] = [];
-
 setInterval(async () => {
   try {
     const earthquakes = await fetchGlobalEarthquakes();
@@ -113,15 +142,19 @@ setInterval(async () => {
       (eq) => !lastEarthquakes.find((lastEq) => lastEq.id === eq.id)
     );
 
-    // Broadcast ke semua clients
-    io.emit("earthquakeUpdate", {
-      earthquakes: earthquakes.slice(0, 100), // Limit 100 earthquake terakhir
+    // Update current data
+    currentEarthquakeData = {
+      earthquakes: earthquakes.slice(0, 100),
       newEarthquakes: newEarthquakes,
       totalEarthquakes: earthquakes.length,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    // Broadcast ke semua clients
+    io.emit("earthquakeUpdate", currentEarthquakeData);
 
     lastEarthquakes = earthquakes;
+    console.log(`🔄 Data updated: ${earthquakes.length} earthquakes, ${newEarthquakes.length} new`);
   } catch (error) {
     console.error("Error in update loop:", error);
   }
