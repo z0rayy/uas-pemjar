@@ -1,56 +1,40 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { GlobalEarthquake } from "../hooks/useGlobalEarthquakeSocket";
 import { EarthquakeMap } from "./EarthquakeMap";
 import "./EarthquakeHistory.css";
 
 interface EarthquakeHistoryProps {
   earthquakes: GlobalEarthquake[];
+  filteredEarthquakes: GlobalEarthquake[];
+  searchCountry: string;
+  setSearchCountry: (value: string) => void;
+  selectedDate: string;
+  setSelectedDate: (value: string) => void;
+  sortBy: "magnitude" | "time";
+  setSortBy: (value: "magnitude" | "time") => void;
+  countries: string[];
 }
 
-export const EarthquakeHistory = ({ earthquakes }: EarthquakeHistoryProps) => {
-  const [searchCountry, setSearchCountry] = useState("");
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [sortBy, setSortBy] = useState<"magnitude" | "time">("magnitude");
+export const EarthquakeHistory = ({
+  earthquakes,
+  filteredEarthquakes,
+  searchCountry,
+  setSearchCountry,
+  selectedDate,
+  setSelectedDate,
+  sortBy,
+  setSortBy,
+  countries
+}: EarthquakeHistoryProps) => {
+  const [selectedEarthquakeId, setSelectedEarthquakeId] = useState<string | null>(null);
 
-  // Get unique countries
-  const countries = useMemo(() => {
-    const unique = new Set(earthquakes.map((eq) => eq.country));
-    return Array.from(unique).sort();
-  }, [earthquakes]);
+  // Clear selected earthquake when filters change to prevent invalid state
+  useEffect(() => {
+    setSelectedEarthquakeId(null);
+  }, [filteredEarthquakes]);
 
-  // Get date 7 days ago
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  // const maxDate = sevenDaysAgo.toISOString().split("T")[0];
-
-  // Filter earthquakes
-  const filteredEarthquakes = useMemo(() => {
-    let filtered = [...earthquakes];
-
-    // Filter by country
-    if (searchCountry) {
-      filtered = filtered.filter((eq) =>
-        eq.country.toLowerCase().includes(searchCountry.toLowerCase())
-      );
-    }
-
-    // Filter by date
-    if (selectedDate) {
-      filtered = filtered.filter((eq) => {
-        const eqDate = new Date(eq.time).toISOString().split("T")[0];
-        return eqDate === selectedDate;
-      });
-    }
-
-    // Sort
-    if (sortBy === "magnitude") {
-      filtered.sort((a, b) => b.magnitude - a.magnitude);
-    } else {
-      filtered.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
-    }
-
-    return filtered;
-  }, [earthquakes, searchCountry, selectedDate, sortBy]);
+  // Safety check for filteredEarthquakes
+  const safeFilteredEarthquakes = filteredEarthquakes || [];
 
   const getMagnitudeColor = (magnitude: number) => {
     if (magnitude < 4) return "#FFD700";
@@ -136,46 +120,65 @@ export const EarthquakeHistory = ({ earthquakes }: EarthquakeHistoryProps) => {
 
       {/* Results Info */}
       <div className="results-info">
-        <p>Found <strong>{filteredEarthquakes.length}</strong> earthquake(s)</p>
+        <p>Found <strong>{safeFilteredEarthquakes.length}</strong> earthquake(s)</p>
       </div>
 
       {/* Earthquakes List */}
       <div className="earthquakes-list">
-        {filteredEarthquakes.length > 0 ? (
-          filteredEarthquakes.map((eq) => (
-            <div key={eq.id} className="earthquake-item">
-              <div
-                className="magnitude-indicator"
-                style={{ backgroundColor: getMagnitudeColor(eq.magnitude) }}
-              >
-                <span className="magnitude">{eq.magnitude.toFixed(1)}</span>
-                <span className="magnitude-label">Magnitude</span>
-              </div>
+        {safeFilteredEarthquakes.length > 0 ? (
+          safeFilteredEarthquakes.map((eq) => {
+            const isSelected = selectedEarthquakeId === eq.id;
 
-              <div className="earthquake-info">
-                <h4 className="place">{eq.place}</h4>
-                <p className="country">{eq.country}</p>
-
-                <div className="details">
-                  <span className="detail-item">
-                    📍 {eq.latitude.toFixed(2)}°, {eq.longitude.toFixed(2)}°
-                  </span>
-                  <span className="detail-item">
-                    📏 Depth: {eq.depth.toFixed(1)} km
-                  </span>
-                  <span className="detail-item">
-                    🕐 {new Date(eq.time).toLocaleString("id-ID")}
-                  </span>
-                  {eq.tsunamiWarning && (
-                    <span className="tsunami-alert">⚠️ TSUNAMI WARNING</span>
-                  )}
+            return (
+              <div key={eq.id} className="earthquake-item">
+                <div
+                  className="magnitude-indicator"
+                  style={{ backgroundColor: getMagnitudeColor(eq.magnitude) }}
+                >
+                  <span className="magnitude">{eq.magnitude.toFixed(1)}</span>
+                  <span className="magnitude-label">Magnitude</span>
                 </div>
 
-                {/* Map showing earthquake location */}
-                <EarthquakeMap earthquake={eq} />
+                <div
+                  className="earthquake-info"
+                  onClick={() => setSelectedEarthquakeId(isSelected ? null : eq.id)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <h4 className="place">{eq.place}</h4>
+                  <p className="country">{eq.country}</p>
+
+                  <div className="details">
+                    <span className="detail-item">
+                      📍 {eq.latitude.toFixed(2)}°, {eq.longitude.toFixed(2)}°
+                    </span>
+                    <span className="detail-item">
+                      📏 Depth: {eq.depth.toFixed(1)} km
+                    </span>
+                    <span className="detail-item">
+                      🕐 {new Date(eq.time).toLocaleString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric"
+                      })}
+                    </span>
+                    {eq.tsunamiWarning && (
+                      <span className="tsunami-alert">⚠️ TSUNAMI WARNING</span>
+                    )}
+                    <span className="detail-item" style={{ color: '#666', fontSize: '0.9em' }}>
+                      {isSelected ? '🗺️ Click to hide map' : '🗺️ Click to show map'}
+                    </span>
+                  </div>
+
+                  {/* Map showing earthquake location - only when selected and valid */}
+                  {isSelected && eq && typeof eq.latitude === 'number' && typeof eq.longitude === 'number' && (
+                    <EarthquakeMap earthquake={eq} />
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="no-results">
             <p>No earthquakes found for the selected filters</p>

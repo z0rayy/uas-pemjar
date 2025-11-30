@@ -1,19 +1,78 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useGlobalEarthquakeSocket } from "../hooks/useGlobalEarthquakeSocket";
 import { EarthquakeHistory } from "./EarthquakeHistory";
+import { TodayEarthquakesMap } from "./TodayEarthquakesMap";
 import { Header } from "./Header";
 import "./EarthquakeDashboard.css";
 
 export const EarthquakeDashboard = () => {
   const { data, isConnected, error } = useGlobalEarthquakeSocket();
+  const [searchCountry, setSearchCountry] = useState("");
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"magnitude" | "time">("time");
 
   useEffect(() => {
     document.title = `Earthquake Detection - ${data?.totalEarthquakes || 0} Events`;
   }, [data?.totalEarthquakes]);
 
+  // Get unique countries for filter options
+  const countries = useMemo(() => {
+    if (!data?.earthquakes) return [];
+    const unique = new Set(data.earthquakes.map((eq) => eq.country));
+    return Array.from(unique).sort();
+  }, [data?.earthquakes]);
+
+  // Filter and sort earthquakes
+  const filteredEarthquakes = useMemo(() => {
+    if (!data?.earthquakes || !Array.isArray(data.earthquakes)) return [];
+
+    try {
+      let filtered = [...data.earthquakes].filter(eq =>
+        eq &&
+        typeof eq.latitude === 'number' &&
+        typeof eq.longitude === 'number' &&
+        typeof eq.magnitude === 'number' &&
+        eq.id
+      );
+
+      // Filter by country
+      if (searchCountry) {
+        filtered = filtered.filter((eq) =>
+          eq.country && eq.country.toLowerCase().includes(searchCountry.toLowerCase())
+        );
+      }
+
+      // Filter by date
+      if (selectedDate) {
+        filtered = filtered.filter((eq) => {
+          try {
+            const eqDate = new Date(eq.time).toISOString().split("T")[0];
+            return eqDate === selectedDate;
+          } catch (error) {
+            return false;
+          }
+        });
+      }
+
+      // Sort
+      if (sortBy === "magnitude") {
+        filtered.sort((a, b) => b.magnitude - a.magnitude);
+      } else {
+        filtered.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+      }
+
+      return filtered;
+    } catch (error) {
+      console.error('Error filtering earthquakes:', error);
+      return [];
+    }
+  }, [data?.earthquakes, searchCountry, selectedDate, sortBy]);
+
   const getLatestEarthquake = () => {
     if (!data?.earthquakes || data.earthquakes.length === 0) return null;
-    return data.earthquakes[0];
+    return data.earthquakes.reduce((latest, current) =>
+      new Date(current.time) > new Date(latest.time) ? current : latest
+    );
   };
 
   const getHighestMagnitude = () => {
@@ -64,7 +123,14 @@ export const EarthquakeDashboard = () => {
                 <div className="stat-value">{latest.magnitude.toFixed(1)} M</div>
                 <div className="stat-detail">{latest.country}</div>
                 <div className="stat-time">
-                  {new Date(latest.time).toLocaleTimeString("id-ID")}
+                  {new Date(latest.time).toLocaleString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                  })}
                 </div>
               </>
             ) : (
@@ -110,7 +176,30 @@ export const EarthquakeDashboard = () => {
       )}
 
       {data?.earthquakes && (
-        <EarthquakeHistory earthquakes={data.earthquakes} />
+        <>
+          <TodayEarthquakesMap
+            earthquakes={data.earthquakes}
+            filteredEarthquakes={filteredEarthquakes}
+            searchCountry={searchCountry}
+            setSearchCountry={setSearchCountry}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            countries={countries}
+          />
+          <EarthquakeHistory
+            earthquakes={data.earthquakes}
+            filteredEarthquakes={filteredEarthquakes}
+            searchCountry={searchCountry}
+            setSearchCountry={setSearchCountry}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            countries={countries}
+          />
+        </>
       )}
 
       {!data && (
