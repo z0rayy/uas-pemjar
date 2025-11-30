@@ -7,7 +7,7 @@ import axios from "axios";
 const app = express();
 const httpServer = createServer(app);
 
-// CORS configuration - allow frontend origins
+// CORS configuration
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
