@@ -16,7 +16,6 @@ interface TodayEarthquakesMapProps {
 }
 
 export const TodayEarthquakesMap = ({
-    earthquakes,
     filteredEarthquakes
 }: TodayEarthquakesMapProps) => {
     // Use the filtered earthquakes instead of 24-hour filter

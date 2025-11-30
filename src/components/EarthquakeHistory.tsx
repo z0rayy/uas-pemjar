@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import type { GlobalEarthquake } from "../hooks/useGlobalEarthquakeSocket";
 import { EarthquakeMap } from "./EarthquakeMap";
 import "./EarthquakeHistory.css";
@@ -16,7 +16,6 @@ interface EarthquakeHistoryProps {
 }
 
 export const EarthquakeHistory = ({
-  earthquakes,
   filteredEarthquakes,
   searchCountry,
   setSearchCountry,
